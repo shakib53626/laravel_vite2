@@ -6,7 +6,7 @@
                     <div class="card mt-5">
                         <div class="card-header"><router-link :to="{ name: 'list' }" class="btn btn-success">All Data</router-link></div>
                         <div class="card-body">
-                            <form @submit.prevent="storeData">
+                            <form @submit.prevent="updateData">
                                 <div class="mb-3">
                                   <label for="" class="form-label">Name</label>
                                   <input type="text" class="form-control" name="name" placeholder="Enter Your Name" v-model="form.name">
@@ -33,7 +33,7 @@
                                   <span v-if="errors.name" class="text-danger">{{errors.gender[0]}}</span>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                               </form>
                         </div>
                     </div>
@@ -57,12 +57,26 @@ export default {
       errors:{},
     }
   },
+  mounted(){
+    this.editData();
+  },
   methods: {
-    storeData(){
+    editData(){
       axios
-            .post("/api/student", this.form)
+            .get(`/api/student/${this.$route.params.id}`)
             .then((res) => {
-                if(res.status === 201){
+                if(res.status === 200){
+                  this.form = res.data.data
+                }
+            }).catch((err) => {
+              this.errors = err.response.data.errors
+            })
+    },
+    updateData(){
+      axios
+            .put(`/api/student/${this.$route.params.id}`, this.form)
+            .then((res) => {
+                if(res.status === 200){
                   this.form = '';
                   this.errors = '';
                   this.$router.push({name:'list'});

@@ -25,8 +25,8 @@
                                         <td>{{ student.phone }}</td>
                                         <td>{{ student.gender }}</td>
                                         <td>
-                                            <a href="" class="btn btn-success me-2">Edit</a>
-                                            <a href="" class="btn btn-danger">Delete</a>
+                                            <router-link :to="{name:'Edit', params:{id:student.id}}" href="" class="btn btn-success me-2">Edit</router-link>
+                                            <a href="" class="btn btn-danger" @click.prevent="destroy(student.id)">Delete</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -54,10 +54,22 @@ export default {
             axios.get("/api/student")
             .then((res) => {
                 this.student = res.data
+
             }).catch(() => {
 
             })
-        }
+        },
+        destroy(id){
+            if(!window.confirm('Are you sure to delete ?')){
+                return;
+            }
+            axios.delete(`api/student/${id}`)
+                .then((res) => {
+                    if(res.status == 200){
+                        this.fetchData();
+                    }
+                })
+        },
     },
 }
 </script>
